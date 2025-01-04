@@ -42,7 +42,7 @@ def get_balance(response: Response, session=session, user=user):
     get_income = session.exec(select(func.sum(TransactionModel.amount))
         .where(TransactionModel.user == user.get("user_id"), TransactionModel.transaction_type=="Income")).first()
     
-    if get_expenses:
+    if get_income:
         data["Income"] += get_income
         data["balance"] += get_income
 
@@ -57,3 +57,10 @@ def get_recent_transactions(session=session, user=user):
 
 
 
+#Task
+@router.get("/task")
+def task(session=session, user=user):
+    inner_join = session.exec(select(AccountModel, TransactionModel).join(TransactionModel).where(TransactionModel.user==user.get("user_id"))).all()
+
+    left_join =  session.exec(select(AccountModel).join(TransactionModel, isouter=True).where(TransactionModel.user==user.get("user_id"))).all()
+    return inner_join

@@ -1,7 +1,7 @@
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
-from fastapi.exceptions import RequestValidationError
+from fastapi.exceptions import RequestValidationError, HTTPException
 from fastapi.responses import JSONResponse
 from sqlalchemy.exc import IntegrityError, OperationalError
 from dotenv import load_dotenv
@@ -58,6 +58,17 @@ def request_exception(request:Request, exc:RequestValidationError):
 
 @app.exception_handler(Exception)
 def global_exception(request:Request, exc:Exception):
+    return JSONResponse(
+        status_code=500,
+        content = {
+            "data":None,
+            "message":"",
+            "error":str(exc)
+            }
+    )
+
+@app.exception_handler(HTTPException)
+def global_exception(request:Request, exc:HTTPException):
     return JSONResponse(
         status_code=500,
         content = {
