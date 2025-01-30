@@ -9,3 +9,19 @@ class TransactionModel(BaseModel, table=True):
     user:Optional[int] = Field(default=None,foreign_key='usermodel.id')
     category:Optional[int] = Field(default=None,foreign_key='categorymodel.id')
     account:Optional[int] = Field(default=None,foreign_key='accountmodel.id')
+
+class IncomeModel(BaseModel, table=True):
+    amount:float
+    description:str
+    user:Optional[int] = Field(default=None,foreign_key='usermodel.id')
+    category:Optional[int] = Field(default=None,foreign_key='categorymodel.id')
+    account:Optional[int] = Field(default=None,foreign_key='accountmodel.id')
+
+class ExpenseModel(BaseModel, table=True):
+    amount:float
+    description:str
+    user:Optional[int] = Field(default=None,foreign_key='usermodel.id')
+    category:Optional[int] = Field(default=None,foreign_key='categorymodel.id')
+    account:Optional[int] = Field(default=None,foreign_key='accountmodel.id')
+
+

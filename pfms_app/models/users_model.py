@@ -16,6 +16,7 @@ class BaseUserModel(SQLModel):
     profile_pic:Optional[str] = Field(default=None, description="User's profile picture url")
     qualification:Optional[str] = Field(default=None, description="User's Qualification details")
     address:Optional[str] = Field(default=None, description="User's address details")
+    # created_at:datetime = Field(default=datetime.utcnow())  # need to update in db
 
     def validate_date_of_birth(cls, value):
         if value is None:

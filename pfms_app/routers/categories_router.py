@@ -11,8 +11,13 @@ router = APIRouter()
 
 @router.post('/create')
 def category_create(category:CategoryModel, response:Response, session=session, current_user=user):
+    user_category = session.exec(select(CategoryModel).where(CategoryModel.name == category.name.capitalize(),CategoryModel.user == current_user.get('user_id'))).first()
+    if user_category:
+        response.status_code = 400
+        return RestResponse(error=f'{category.name} is already exists.')
     category.user = current_user.get('user_id')
     category.created_by = current_user.get('user_id')
+    category.name = category.name.capitalize()
     session.add(category)
     session.commit()
     session.refresh(category)

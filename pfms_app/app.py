@@ -81,14 +81,74 @@ def global_exception(request:Request, exc:HTTPException):
 
 @app.exception_handler(IntegrityError)
 async def handle_integrity_error(request: Request, exc: IntegrityError):
-    return JSONResponse(
-        status_code=400,
-        content={
-            "data":None,
-            "message":"",
-            "error":str(exc)
+    # Extract the error message
+    error_message = str(exc.orig)
+    print("***************************",error_message)
+    
+    # Handle Unique Constraint Violation
+    if "duplicate key value violates unique constraint" in error_message:
+        error_type = "Unique Constraint Violation"
+        error_detail = "The value you are trying to insert already exists."
+        return JSONResponse(
+            status_code=409,  # Conflict status code
+            content={
+                "data": None,
+                "message": error_type,
+                "error": error_detail
             }
-    )
+        )
+    
+    # Handle Foreign Key Constraint Violation
+    elif "a foreign key constraint fails" in error_message:
+        error_type = "Foreign Key Constraint Violation"
+        error_detail = "This item cannot be deleted because it is linked to other records. Please remove the related records first before deleting this item."
+        return JSONResponse(
+            status_code=422,  # Unprocessable Entity status code
+            content={
+                "data": None,
+                "message": "",
+                "error": error_detail
+            }
+        )
+    
+    # Handle Not Null Constraint Violation
+    elif "not-null violation" in error_message:
+        error_type = "Not Null Constraint Violation"
+        error_detail = "A required field cannot be null."
+        return JSONResponse(
+            status_code=400,  # Bad Request status code
+            content={
+                "data": None,
+                "message": error_type,
+                "error": error_detail
+            }
+        )
+    
+    # Handle Check Constraint Violation
+    elif "check constraint violation" in error_message:
+        error_type = "Check Constraint Violation"
+        error_detail = "The value does not satisfy the check constraint."
+        return JSONResponse(
+            status_code=400,  # Bad Request status code
+            content={
+                "data": None,
+                "message": error_type,
+                "error": error_detail
+            }
+        )
+    
+    # Handle General Integrity Errors
+    else:
+        error_type = "Integrity Error"
+        error_detail = "An integrity error occurred while processing the request."
+        return JSONResponse(
+            status_code=400,  # Bad Request status code for general errors
+            content={
+                "data": None,
+                "message": error_type,
+                "error": error_detail
+            }
+        )
 
 
 @app.exception_handler(OperationalError)
